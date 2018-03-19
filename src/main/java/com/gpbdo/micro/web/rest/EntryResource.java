@@ -5,6 +5,7 @@ import com.gpbdo.micro.domain.Entry;
 
 import com.gpbdo.micro.repository.EntryRepository;
 import com.gpbdo.micro.repository.search.EntrySearchRepository;
+import com.gpbdo.micro.security.SecurityUtils;
 import com.gpbdo.micro.web.rest.errors.BadRequestAlertException;
 import com.gpbdo.micro.web.rest.util.HeaderUtil;
 import com.gpbdo.micro.web.rest.util.PaginationUtil;
@@ -103,7 +104,7 @@ public class EntryResource {
     @Timed
     public ResponseEntity<List<Entry>> getAllEntries(Pageable pageable) {
         log.debug("REST request to get a page of Entries");
-        Page<Entry> page = entryRepository.findAll(pageable);
+        Page<Entry> page = entryRepository.findByBlogUserLoginOrderByDateDesc(SecurityUtils.getCurrentUserLogin().get(), pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/entries");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
